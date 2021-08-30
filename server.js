@@ -1,32 +1,24 @@
 const express = require("express");
 const path = require("path");
 const WebSocket = require("ws");
+const SocketClass = require("./Classes/SocketClass");
 
 const app = express();
 const socketServer = new WebSocket.Server({ port: 8080 });
-const clients = new Set();
+const _socket = new SocketClass();
 
 const messages = ["Start Conversing!!"];
 
 socketServer.on("connection", (socketClient) => {
-  clients.add(WebSocket);
   console.log("Connected");
   console.log("client Set length: ", socketServer.clients.size);
   socketClient.send(JSON.stringify(messages));
 
-  socketClient.on("message", (message) => {
-    console.log(`Message Recieved: ${message}`);
-    socketServer.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify([message.toString("utf-8")]));
-      }
-    });
-  });
+  socketClient.on("message", (message) =>
+    _socket.MessageParse(message, socketServer, WebSocket)
+  );
 
-  socketClient.on("close", (socketClient) => {
-    console.log("Closed");
-    console.log("Number of Clients: ", socketServer.clients.size);
-  });
+  socketClient.on("close", (socketClient) => _socket.CloseConn(socketServer));
 });
 
 app.get("/", (req, res) => {
