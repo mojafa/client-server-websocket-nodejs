@@ -5,21 +5,13 @@ const SocketClass = require("./Classes/SocketClass");
 
 const app = express();
 const socketServer = new WebSocket.Server({ port: 8080 });
-const _socket = new SocketClass();
+const _socket = new SocketClass(socketServer, WebSocket);
 
-const messages = ["Start Conversing!!"];
-
-socketServer.on("connection", (socketClient) => {
-  console.log("Connected");
-  console.log("client Set length: ", socketServer.clients.size);
-  socketClient.send(JSON.stringify(messages));
-
-  socketClient.on("message", (message) =>
-    _socket.MessageParse(message, socketServer, WebSocket)
-  );
-
-  socketClient.on("close", (socketClient) => _socket.CloseConn(socketServer));
-});
+/**
+ * Establish initial connection
+ * to websocket server and perform abstructed operations
+ */
+_socket.onConnected();
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views/index.html"));
