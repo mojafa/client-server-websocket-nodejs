@@ -13,8 +13,14 @@ const _socket = new SocketClass(socketServer, WebSocket);
  */
 _socket.onConnected();
 
+/**
+ * Enable frontend static file access
+ */
+
+app.use("/static", express.static("./public/static"));
+
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views/index.html"));
+  res.sendFile(path.join(__dirname, "public/views/index.html"));
 });
 
 const PORT = process.env.PORT || 5000;

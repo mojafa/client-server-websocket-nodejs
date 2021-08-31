@@ -26,7 +26,11 @@ class SocketClass {
     console.log(message === undefined ? "" : `Message Recieved: ${message}`);
     this.socketServer.clients.forEach((client) => {
       if (client.readyState === this.WebSocket.OPEN) {
-        client.send(JSON.stringify([message.toString("utf-8")]));
+        try {
+          client.send(JSON.stringify(message.toString("utf-8")));
+        } catch (e) {
+          console.log(`${e.message}`);
+        }
       }
     });
   }

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Websocket</title>
+  </head>
+  <body>
+    <form name="publish">
+      <label>First Name</label>
+      <input type="text" name="fname" maxlength="50" />
+      <br />
+
+      <label>Last Name</label>
+      <input type="text" name="lname" maxlength="50" />
+      <br />
+
+      <label>Admission Number</label>
+      <input type="text" name="admNo" maxlength="50" />
+      <br />
+
+      <label>Code</label>
+      <input type="text" name="code" maxlength="50" />
+      <br />
+
+      <input type="submit" value="Send" />
+    </form>
+
+    <div id="messages"></div>
+
+    <script>
+      const socket = new WebSocket("ws://localhost:8080");
+
+      // Send message from the form
+      document.forms.publish.onsubmit = (e) => {
+        e.preventDefault();
+        let outgoingMessage = {
+          firstName: document.getElementsByName("fname")[0].value,
+          lastName: document.getElementsByName("lname")[0].value,
+          admNo: document.getElementsByName("admNo")[0].value,
+          code: document.getElementsByName("code")[0].value,
+        };
+
+        console.log(outgoingMessage);
+
+        socket.send(JSON.stringify(outgoingMessage));
+        return false;
+      };
+
+      // Handle incoming messages
+      socket.onmessage = (e) => {
+        let incomingMessgae = JSON.parse(e.data);
+
+        if (typeof incomingMessgae === "string")
+          incomingMessgae = JSON.parse(incomingMessgae);
+
+        console.log(
+          incomingMessgae.firstName === undefined
+            ? incomingMessgae
+            : incomingMessgae.firstName
+        );
+        showMessage(
+          incomingMessgae.firstName === undefined
+            ? incomingMessgae
+            : incomingMessgae.firstName
+        );
+      };
+
+      socket.onclose = (e) => console.log(`Socket closing ${e.code}`);
+
+      const showMessage = (message) => {
+        let messageElem = document.createElement("div");
+        messageElem.textContent = message;
+        document.getElementById("messages").prepend(messageElem);
+      };
+    </script>
+  </body>
+</html>
