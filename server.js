@@ -23,7 +23,10 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/views/index.html"));
 });
 
+// production best practice (using process.env)
 const PORT = process.env.PORT || 5000;
+
+// Listen for port connection
 app.listen(PORT, () => {
   console.log(`Running on port ${PORT}`);
 });
