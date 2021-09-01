@@ -15,7 +15,7 @@
     <div class="card">
       <div class="card-header">Student Info form</div>
       <div class="card-body">
-        <form name="publish">
+        <form id="publish" name="publish">
           <div class="form-group">
             <label for="firstName">First Name</label>
             <input
@@ -24,6 +24,7 @@
               name="fname"
               placeholder="Enter first name"
             />
+            <div id="firstname" class="text-danger"></div>
           </div>
 
           <div class="form-group">
@@ -34,6 +35,7 @@
               name="lname"
               placeholder="Enter last name"
             />
+            <div id="lastname" class="text-danger"></div>
           </div>
 
           <div class="form-group">
@@ -44,6 +46,18 @@
               name="admNo"
               placeholder="Enter Admission No"
             />
+            <div id="admissionNo" class="text-danger"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="admNo">Course Information</label>
+            <input
+              type="text"
+              class="form-control"
+              name="courseInfo"
+              placeholder="Enter course info"
+            />
+            <div id="courseinfo" class="text-danger"></div>
           </div>
 
           <div class="form-group">
@@ -54,6 +68,7 @@
               name="code"
               placeholder="Enter code"
             />
+            <div id="code" class="text-danger"></div>
           </div>
 
           <button type="submit" class="btn btn-primary">Submit</button>
@@ -69,6 +84,8 @@
       // Send message from the form
       document.forms.publish.onsubmit = (e) => {
         e.preventDefault();
+
+        // Fill JSON data
         let outgoingMessage = {
           firstName: document.getElementsByName("fname")[0].value,
           lastName: document.getElementsByName("lname")[0].value,
@@ -76,9 +93,13 @@
           code: document.getElementsByName("code")[0].value,
         };
 
+        // Clear any previous errors
+        document.getElementById("firstname").innerHTML = "";
+
         console.log(outgoingMessage);
 
         socket.send(JSON.stringify(outgoingMessage));
+        document.getElementById("publish").reset();
         return false;
       };
 
@@ -89,17 +110,25 @@
         if (typeof incomingMessgae === "string")
           incomingMessgae = JSON.parse(incomingMessgae);
 
-        console.log(
-          incomingMessgae.firstName === undefined
-            ? incomingMessgae
-            : incomingMessgae.firstName
-        );
+        // Check for any errors
+        if (incomingMessgae.message === "Error") {
+          appendErrorMsg(incomingMessgae.errors);
+        } else {
+          if (typeof incomingMessgae === String)
+            incomingMessgae = JSON.parse(incomingMessgae);
 
-        showMessage(
-          incomingMessgae.firstName === undefined
-            ? incomingMessgae
-            : incomingMessgae.firstName
-        );
+          console.log(
+            incomingMessgae.firstName === undefined
+              ? incomingMessgae
+              : incomingMessgae.firstName
+          );
+
+          showMessage(
+            incomingMessgae.firstName === undefined
+              ? incomingMessgae
+              : incomingMessgae.firstName
+          );
+        }
       };
 
       socket.onclose = (e) => console.log(`Socket closing ${e.code}`);
@@ -108,6 +137,27 @@
         let messageElem = document.createElement("div");
         messageElem.textContent = message;
         document.getElementById("messages").prepend(messageElem);
+      };
+
+      const appendErrorMsg = (errResponse) => {
+        if (errResponse.firstName)
+          document.getElementById("firstname").innerHTML =
+            errResponse.firstName + " !!";
+
+        if (errResponse.lastName)
+          document.getElementById("lastName").innerHTML =
+            errResponse.lastName + " !!";
+
+        if (errResponse.admNo)
+          document.getElementById("admissionNo").innerHTML =
+            errResponse.admNo + " !!";
+
+        if (errResponse.lastName)
+          document.getElementById("courseinfo").innerHTML =
+            errResponse.lastName + " !!";
+
+        if (errResponse.code)
+          document.getElementById("code").innerHTML = errResponse.code + " !!";
       };
     </script>
   </body>

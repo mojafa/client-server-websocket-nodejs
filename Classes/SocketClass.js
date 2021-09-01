@@ -11,6 +11,11 @@
  */
 
 const BufferConverterToString = require("./BufferConverter");
+const Validator = require("./Validator");
+
+let buff = new BufferConverterToString();
+let validator = new Validator();
+
 class SocketClass {
   #messages = ["Start Conversing!!"];
   constructor(socketServer, WebSocket) {
@@ -38,11 +43,22 @@ class SocketClass {
 
   #MessageParse(message) {
     console.log(message === undefined ? "" : `Message Recieved: ${message}`);
+
+    const { valid, errors } = validator.validateJSONData(message);
+
     this.socketServer.clients.forEach((client) => {
       if (client.readyState === this.WebSocket.OPEN) {
         try {
-          let buff = new BufferConverterToString();
-          client.send(JSON.stringify(buff.convertToJSON(message)));
+          if (valid) {
+            client.send(JSON.stringify(buff.convertToJSON(message)));
+          } else {
+            let response = {
+              errors,
+              message: "Error",
+            };
+
+            client.send(JSON.stringify(response));
+          }
         } catch (e) {
           console.log(`${e.message}`);
         }
