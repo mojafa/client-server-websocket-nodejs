@@ -116,6 +116,14 @@
       socket.onmessage = (e) => {
         let incomingMessgae = JSON.parse(e.data);
 
+        /**
+         * Incoming data/message often had \ in its stringified JSON response
+         * the first JSON.parse converts the data to a key value pair but with \
+         *
+         * the second JSON.parse now removes the \ so that the JSON string is now fully converted
+         * into a JSON object
+         *
+         */
         if (typeof incomingMessgae === "string")
           incomingMessgae = JSON.parse(incomingMessgae);
 
@@ -171,7 +179,7 @@
           document.getElementById("admissionNo").innerHTML =
             errResponse.admNo + " !!";
 
-        if (errResponse.lastName)
+        if (errResponse.courseInfo)
           document.getElementById("courseinfo").innerHTML =
             errResponse.courseInfo + " !!";
 
