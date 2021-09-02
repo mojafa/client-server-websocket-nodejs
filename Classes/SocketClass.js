@@ -8,16 +8,20 @@
  *
  * @messages class variable can be public or private (boils down to
  * preference).
+ *
+ *
  */
 
 const BufferConverterToString = require("./BufferConverter");
 const Validator = require("./Validator");
+const Student = require("./StudentClass");
 
 let buff = new BufferConverterToString();
 let validator = new Validator();
+let student = new Student();
 
 class SocketClass {
-  #messages = ["Start Conversing!!"];
+  #messages = ["Start Feeding in data!!"];
   constructor(socketServer, WebSocket) {
     this.WebSocket = WebSocket;
     this.socketServer = socketServer;
@@ -50,11 +54,24 @@ class SocketClass {
       if (client.readyState === this.WebSocket.OPEN) {
         try {
           if (valid) {
-            client.send(JSON.stringify(buff.convertToJSON(message)));
+            // client.send(JSON.stringify(buff.convertToJSON(message)));
+            student.setStudent(message);
+
+            let response = {
+              message: "Successfully Submitted to websocket ✅",
+              studentInfo: {
+                studentName: student.studentName,
+                studentAdmissionNo: student.studentAdmissionNo,
+                courseInfo: student.courseInfo,
+                personalCode: student.personalCode,
+              },
+            };
+
+            client.send(JSON.stringify(response));
           } else {
             let response = {
               errors,
-              message: "Error",
+              message: "Error ❌",
             };
 
             client.send(JSON.stringify(response));

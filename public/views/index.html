@@ -9,6 +9,10 @@
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     />
 
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
     <title>Websocket</title>
   </head>
   <body>
@@ -78,6 +82,8 @@
     <!--  -->
     <div id="messages"></div>
 
+    <div id="status"></div>
+
     <script>
       const socket = new WebSocket("ws://localhost:8080");
 
@@ -90,13 +96,16 @@
           firstName: document.getElementsByName("fname")[0].value,
           lastName: document.getElementsByName("lname")[0].value,
           admNo: document.getElementsByName("admNo")[0].value,
+          courseInfo: document.getElementsByName("courseInfo")[0].value,
           code: document.getElementsByName("code")[0].value,
         };
 
         // Clear any previous errors
         document.getElementById("firstname").innerHTML = "";
-
-        console.log(outgoingMessage);
+        document.getElementById("lastname").innerHTML = "";
+        document.getElementById("admissionNo").innerHTML = "";
+        document.getElementById("courseinfo").innerHTML = "";
+        document.getElementById("code").innerHTML = "";
 
         socket.send(JSON.stringify(outgoingMessage));
         document.getElementById("publish").reset();
@@ -111,23 +120,20 @@
           incomingMessgae = JSON.parse(incomingMessgae);
 
         // Check for any errors
-        if (incomingMessgae.message === "Error") {
+        if (incomingMessgae.message === "Error ❌") {
           appendErrorMsg(incomingMessgae.errors);
+          showStatus(incomingMessgae, (status = "error"));
         } else {
-          if (typeof incomingMessgae === String)
+          if (typeof incomingMessgae === "string")
             incomingMessgae = JSON.parse(incomingMessgae);
-
-          console.log(
-            incomingMessgae.firstName === undefined
-              ? incomingMessgae
-              : incomingMessgae.firstName
-          );
 
           showMessage(
             incomingMessgae.firstName === undefined
               ? incomingMessgae
-              : incomingMessgae.firstName
+              : incomingMessgae.studentInfo.studentName
           );
+
+          showStatus(incomingMessgae, (status = "success"));
         }
       };
 
@@ -139,13 +145,26 @@
         document.getElementById("messages").prepend(messageElem);
       };
 
+      const showStatus = (message, status) => {
+        let messageElem = document.createElement("div");
+        messageElem.textContent = message.message;
+
+        if (status === "success") {
+          messageElem.className = "text-success";
+        } else {
+          messageElem.className = "text-danger";
+        }
+
+        document.getElementById("status").prepend(messageElem);
+      };
+
       const appendErrorMsg = (errResponse) => {
         if (errResponse.firstName)
           document.getElementById("firstname").innerHTML =
             errResponse.firstName + " !!";
 
         if (errResponse.lastName)
-          document.getElementById("lastName").innerHTML =
+          document.getElementById("lastname").innerHTML =
             errResponse.lastName + " !!";
 
         if (errResponse.admNo)
@@ -154,7 +173,7 @@
 
         if (errResponse.lastName)
           document.getElementById("courseinfo").innerHTML =
-            errResponse.lastName + " !!";
+            errResponse.courseInfo + " !!";
 
         if (errResponse.code)
           document.getElementById("code").innerHTML = errResponse.code + " !!";

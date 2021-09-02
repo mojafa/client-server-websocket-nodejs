@@ -33,8 +33,8 @@ class Validator {
       errors.admNo = "Admission Number must not be empty";
 
     // check course information field is empty
-    if (this.#isEmpty(parsedData))
-      errors.courseinfo = "Course Information must not be empty";
+    if (this.#isEmpty(parsedData.courseInfo))
+      errors.courseInfo = "Course Information must not be empty";
 
     return {
       errors,
