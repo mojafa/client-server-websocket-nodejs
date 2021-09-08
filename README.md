@@ -1,10 +1,5 @@
 # Client Server Websocket
 
-4A - 111208 - Alvin Kariuki Chege
-4A – 113593 – Jaafar Mohammed Abdulkadir
-4A – 108544 - Elisha Mbadi
-4A - 102213 – Rachael Njeri Kiai
-
 This project covers the distributed systems assignment that needed us to write client and a server programs to facilitate interactions using RPC techniques for the following tasks for Client and Server respectively:
 
 Your client should be able to
@@ -49,9 +44,3 @@ To get the program up and running (after download or clone) by:
    Generates package-lock.json
 2. Run npm start
 3. navigate to port 5000 on your local browser to query inputs and view the results on your terminal.
-
-
-
-
-
-
